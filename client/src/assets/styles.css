@@ -1,0 +1,340 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+:root {
+  /* Цветовые переменные */
+  --color-primary: #3b82f6;
+  --color-secondary: #60a5fa;
+  --color-accent: #2563eb;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+  
+  /* Светлая тема */
+  --background-light: #ffffff;
+  --text-light: #1f2937;
+  
+  /* Тёмная тема */
+  --background-dark: #111827;
+  --text-dark: #f3f4f6;
+}
+
+html {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+body {
+  @apply bg-white text-gray-800 transition-colors duration-200 dark:bg-gray-900 dark:text-gray-100;
+}
+
+/* Утилитные классы */
+.btn {
+  @apply inline-flex items-center justify-center rounded px-4 py-2 font-medium transition-colors focus:outline-none;
+}
+
+.btn-primary {
+  @apply bg-primary text-white hover:brightness-110 active:brightness-90;
+}
+
+.btn-secondary {
+  @apply bg-secondary text-white hover:brightness-110 active:brightness-90;
+}
+
+.btn-success {
+  @apply bg-success text-white hover:brightness-110 active:brightness-90;
+}
+
+.btn-error {
+  @apply bg-error text-white hover:brightness-110 active:brightness-90;
+}
+
+.btn-warning {
+  @apply bg-warning text-white hover:brightness-110 active:brightness-90;
+}
+
+.card {
+  @apply rounded-lg bg-white p-4 shadow transition-colors dark:bg-gray-800;
+}
+
+.input {
+  @apply w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white;
+}
+
+.select {
+  @apply appearance-none rounded-md border border-gray-300 bg-white bg-no-repeat px-3 py-2 pr-8 shadow-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-gray-600 dark:bg-gray-700 dark:text-white;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-size: 1.5em 1.5em;
+}
+
+.badge {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+
+.badge-primary {
+  @apply bg-primary bg-opacity-10 text-primary;
+}
+
+.badge-success {
+  @apply bg-success bg-opacity-10 text-success;
+}
+
+.badge-error {
+  @apply bg-error bg-opacity-10 text-error;
+}
+
+.badge-warning {
+  @apply bg-warning bg-opacity-10 text-warning;
+}
+
+.loading-spinner {
+  @apply animate-spin h-5 w-5 text-primary;
+}
+
+.loading-dots {
+  @apply inline-flex items-center;
+}
+
+.loading-dots::after {
+  content: '.';
+  animation: dots 1.5s infinite;
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+/* Анимации */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Основные цвета */
+    --primary: #3b82f6;
+    --primary-rgb: 59, 130, 246;
+    --primary-hover: #2563eb;
+    --secondary: #6b7280;
+    --secondary-rgb: 107, 114, 128;
+    --secondary-hover: #4b5563;
+    --success: #10b981;
+    --success-rgb: 16, 185, 129;
+    --success-hover: #059669;
+    --danger: #ef4444;
+    --danger-rgb: 239, 68, 68;
+    --danger-hover: #dc2626;
+    --warning: #f59e0b;
+    --warning-rgb: 245, 158, 11;
+    --warning-hover: #d97706;
+    --info: #3b82f6;
+    --info-rgb: 59, 130, 246;
+    --info-hover: #2563eb;
+    
+    /* Цвета фона и текста */
+    --bg-main: #ffffff;
+    --bg-secondary: #f9fafb;
+    --bg-card: #ffffff;
+    --text-primary: #111827;
+    --text-secondary: #4b5563;
+    --text-muted: #6b7280;
+    
+    /* Цвета для кода */
+    --bg-code: #1e293b;
+    --border-code: #334155;
+    --text-code: #e2e8f0;
+    
+    /* Цвета границ и разделителей */
+    --border-color: #e5e7eb;
+    --divider-color: #e5e7eb;
+    
+    /* Тени */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    
+    /* Переменные для темной и светлой темы */
+    --background-light: #ffffff;
+    --text-light: #1f2937;
+    --background-dark: #111827;
+    --text-dark: #f3f4f6;
+  }
+
+  .dark {
+    /* Основные цвета */
+    --primary: #60a5fa;
+    --primary-rgb: 96, 165, 250;
+    --primary-hover: #3b82f6;
+    --secondary: #9ca3af;
+    --secondary-rgb: 156, 163, 175;
+    --secondary-hover: #6b7280;
+    --success: #34d399;
+    --success-rgb: 52, 211, 153;
+    --success-hover: #10b981;
+    --danger: #f87171;
+    --danger-rgb: 248, 113, 113;
+    --danger-hover: #ef4444;
+    --warning: #fbbf24;
+    --warning-rgb: 251, 191, 36;
+    --warning-hover: #f59e0b;
+    --info: #60a5fa;
+    --info-rgb: 96, 165, 250;
+    --info-hover: #3b82f6;
+    
+    /* Цвета фона и текста */
+    --bg-main: #111827;
+    --bg-secondary: #1f2937;
+    --bg-card: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-muted: #9ca3af;
+    
+    /* Цвета для кода */
+    --bg-code: #0f172a;
+    --border-code: #1e293b;
+    --text-code: #e2e8f0;
+    
+    /* Цвета границ и разделителей */
+    --border-color: #374151;
+    --divider-color: #374151;
+    
+    /* Тени */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.25);
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 1px 2px 0 rgba(0, 0, 0, 0.26);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.26);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.25);
+  }
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-md font-medium transition-colors;
+  }
+
+  .btn-primary {
+    @apply bg-[var(--color-primary)] text-white hover:bg-[var(--color-accent)];
+  }
+
+  .btn-secondary {
+    @apply bg-[var(--color-secondary)] text-white hover:bg-[var(--color-primary)];
+  }
+
+  .btn-success {
+    @apply bg-[var(--color-success)] text-white hover:bg-opacity-90;
+  }
+
+  .btn-warning {
+    @apply bg-[var(--color-warning)] text-white hover:bg-opacity-90;
+  }
+
+  .btn-error {
+    @apply bg-[var(--color-error)] text-white hover:bg-opacity-90;
+  }
+
+  .btn-outline {
+    @apply border border-[var(--color-primary)] text-[var(--color-primary)] bg-transparent 
+    hover:bg-[var(--color-primary)] hover:text-white;
+  }
+
+  .input {
+    @apply px-4 py-2 rounded-md border border-gray-300 dark:border-gray-700 
+    bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 
+    focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)];
+  }
+
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden;
+  }
+
+  .badge {
+    @apply px-2 py-1 text-xs rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200;
+  }
+
+  .badge-primary {
+    @apply bg-[var(--color-primary)] text-white;
+  }
+
+  .badge-secondary {
+    @apply bg-[var(--color-secondary)] text-white;
+  }
+
+  .loading {
+    @apply inline-block rounded-full border-2 border-t-[var(--color-primary)] animate-spin;
+  }
+
+  .loading-spinner {
+    @apply w-6 h-6 border-2 border-gray-300 dark:border-gray-700 border-t-[var(--color-primary)];
+  }
+
+  .loading-spinner-lg {
+    @apply w-12 h-12;
+  }
+
+  .text-primary {
+    @apply text-[var(--color-primary)];
+  }
+
+  .bg-primary {
+    @apply bg-[var(--color-primary)];
+  }
+
+  .text-success {
+    @apply text-[var(--color-success)];
+  }
+
+  .text-error {
+    @apply text-[var(--color-error)];
+  }
+
+  .text-warning {
+    @apply text-[var(--color-warning)];
+  }
+}
+
+/* Кастомные стили для темной темы */
+.dark {
+  @apply bg-gray-900 text-gray-100;
+}
+
+.dark .card {
+  @apply bg-gray-800 border-gray-700;
+}
+
+/* Стили для CodeMirror */
+.cm-editor {
+  @apply border rounded-md overflow-hidden;
+}
+
+.dark .cm-editor {
+  @apply border-gray-700;
+}
+
+/* Анимации */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* Анимация перехода для тем */
+.dark,
+.light {
+  transition: background-color 0.3s ease, color 0.3s ease;
+} 

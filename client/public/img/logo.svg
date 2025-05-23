@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40" class="h-8 w-auto">
+  <style>
+    .primary { fill: var(--color-primary, #3b82f6); }
+    .secondary { fill: var(--color-accent, #2563eb); }
+    .bg { fill: var(--bg-color, #ffffff); }
+
+    /* Темная тема */
+    @media (prefers-color-scheme: dark) {
+      .primary { fill: var(--color-primary-dark, #60a5fa); }
+      .secondary { fill: var(--color-accent-dark, #93c5fd); }
+      .bg { fill: var(--bg-color-dark, #1f2937); }
+    }
+  </style>
+  <rect width="40" height="40" rx="8" class="bg" />
+  <path class="primary" d="M10,8 L0,20 L10,32 L14,28 L6,20 L14,12 Z" />
+  <path class="secondary" d="M30,8 L40,20 L30,32 L26,28 L34,20 L26,12 Z" />
+</svg>
