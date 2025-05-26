@@ -15,10 +15,6 @@ const commentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Article'
   },
-  task: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Task'
-  },
   status: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],
@@ -79,7 +75,6 @@ commentSchema.methods.isReportedBy = function(userId) {
 
 // Индексы для быстрого поиска
 commentSchema.index({ article: 1, status: 1 });
-commentSchema.index({ task: 1, status: 1 });
 commentSchema.index({ status: 1, createdAt: -1 });
 commentSchema.index({ parentComment: 1 });
 commentSchema.index({ moderationNote: 'text' });

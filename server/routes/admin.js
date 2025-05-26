@@ -339,7 +339,6 @@ router.get('/comments', protect, authorize('admin'), async (req, res) => {
     const comments = await Comment.find(filter)
       .populate('author', 'name')
       .populate('article', 'title')
-      .populate('task', 'title')
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(Number(limit));

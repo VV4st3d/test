@@ -152,6 +152,15 @@
     "clearFilters": "Clear filters"
   },
   "tasks": {
+    "testCodeHelp": "JavaScript code for testing the solution",
+    "inputPlaceholder": "Enter input data",
+    "expectedOutput": "Expected output",
+    "hintPlaceholder": "Enter hint text",
+    "selectDifficulty": "Select difficulty",
+    "outputPlaceholder": "Enter expected output",
+    "titlePlaceholder": "Enter task title",
+    "removeTest": "Remove test",
+    "someTestsFailed": "Some tests failed",
     "successModalTitle": "Success",
     "successModalClose": "Close",
     "error":"Error",
@@ -368,11 +377,10 @@
     "saving": "Saving...",
     "cancel": "Cancel",
     "close": "Close",
-    "accessDenied": "Access denied. Admin only.",
+    "accessDenied": "Access denied. You need administrator rights.",
     "commentDetails": "Comment Details",
     "type": "Type",
     "articleComment": "Article Comment",
-    "taskComment": "Task Comment",
     "reply": "Reply to Comment",
     "changeStatus": "Change Status",
     "approve": "Approve",
@@ -573,6 +581,7 @@
     "commentWithForbiddenWordsPending": "Comment contains forbidden words and has been submitted for moderation"
   },
   "common": {
+    "view": "View",
     "difficulties": {
       "easy": "Easy",
       "medium": "Medium",

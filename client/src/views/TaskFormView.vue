@@ -137,10 +137,19 @@
           <label class="block text-sm font-medium mb-2">{{ $t('tasks.tests') }} *</label>
           <div v-for="(test, index) in task.tests" :key="`test-${index}`" class="bg-gray-50 dark:bg-gray-700 p-4 rounded-md mb-4">
             <div class="mb-3">
-              <label class="block text-sm font-medium mb-1">{{ $t('tasks.testDescription') }} ({{ currentLang.toUpperCase() }})</label>
+              <label class="block text-sm font-medium mb-1">{{ $t('tasks.testDescription') }} (RU)</label>
               <input 
                 type="text" 
-                v-model="task.translations[currentLang].testDescriptions[test._id || `temp-${index}`]" 
+                v-model="task.translations.ru.testDescriptions[test._id || `temp-${index}`]" 
+                class="input w-full"
+                :placeholder="$t('tasks.testDescriptionPlaceholder')"
+              />
+            </div>
+            <div class="mb-3">
+              <label class="block text-sm font-medium mb-1">{{ $t('tasks.testDescription') }} (EN)</label>
+              <input 
+                type="text" 
+                v-model="task.translations.en.testDescriptions[test._id || `temp-${index}`]" 
                 class="input w-full"
                 :placeholder="$t('tasks.testDescriptionPlaceholder')"
               />
@@ -152,6 +161,7 @@
                 v-model="test.description" 
                 class="input w-full"
                 :placeholder="$t('tasks.testDescriptionPlaceholder')"
+                @input="updateTestDescription(index, test._id)"
               />
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
@@ -328,6 +338,28 @@ const fetchTask = async () => {
 
       const response = await axios.get(`${apiUrl}/api/tasks/${taskId}/full`);
       const taskData = response.data;
+      
+      console.log('Получены данные задачи:', taskData);
+
+      // Инициализация объектов testDescriptions, если они отсутствуют
+      if (!taskData.translations?.ru?.testDescriptions) {
+        taskData.translations = taskData.translations || {};
+        taskData.translations.ru = taskData.translations.ru || {};
+        taskData.translations.ru.testDescriptions = {};
+      }
+      
+      if (!taskData.translations?.en?.testDescriptions) {
+        taskData.translations = taskData.translations || {};
+        taskData.translations.en = taskData.translations.en || {};
+        taskData.translations.en.testDescriptions = {};
+      }
+      
+      // Если у теста нет описания в переводах, используем основное описание
+      taskData.tests?.forEach(test => {
+        if (test._id && !taskData.translations.ru.testDescriptions[test._id]) {
+          taskData.translations.ru.testDescriptions[test._id] = test.description || '';
+        }
+      });
 
       // Подготовка переводов
       let translations = {
@@ -348,6 +380,10 @@ const fetchTask = async () => {
           testDescriptions: taskData.translations?.en?.testDescriptions || {}
         }
       };
+      
+      // Логирование для отладки
+      console.log('Загруженные описания тестов RU:', translations.ru.testDescriptions);
+      console.log('Загруженные описания тестов EN:', translations.en.testDescriptions);
 
       task.value = {
         _id: taskData._id,
@@ -368,11 +404,24 @@ const fetchTask = async () => {
         isPublished: taskData.isPublished !== undefined ? taskData.isPublished : false
       };
 
+      // Проверяем, что у всех тестов есть записи в testDescriptions
+      task.value.tests.forEach(test => {
+        if (test._id) {
+          if (!task.value.translations.ru.testDescriptions[test._id]) {
+            task.value.translations.ru.testDescriptions[test._id] = test.description || '';
+          }
+          if (!task.value.translations.en.testDescriptions[test._id]) {
+            task.value.translations.en.testDescriptions[test._id] = '';
+          }
+        }
+      });
+
       console.log('Задача установлена:', {
         templateLength: task.value.translations.ru.template.length,
         solutionLength: task.value.solution.length,
         testsCount: task.value.tests.length,
-        hintsCount: task.value.translations.ru.hints.length
+        hintsCount: task.value.translations.ru.hints.length,
+        testIds: task.value.tests.map(t => t._id)
       });
 
       await nextTick();
@@ -424,22 +473,40 @@ const removeRequirement = (index) => {
 
 const addTest = () => {
   const index = task.value.tests.length;
+  const tempId = `temp-${index}`;
+  
+  // Создаем новый тест с временным ID
   task.value.tests.push({
     description: '',
     input: '',
     expectedOutput: '',
     testCode: 'function test(solution) {\n  // Проверка решения\n  return true;\n}',
-    _id: `temp-${index}`
+    _id: tempId
   });
+  
+  // Добавляем пустые описания для обоих языков
+  task.value.translations.ru.testDescriptions[tempId] = '';
+  task.value.translations.en.testDescriptions[tempId] = '';
 };
 
 const removeTest = (index) => {
   const testId = task.value.tests[index]._id;
+  console.log(`Удаление теста с ID: ${testId}`);
+  
+  // Удаляем тест из массива
   task.value.tests.splice(index, 1);
-  // Удаляем соответствующие переводы описаний
+  
+  // Удаляем соответствующие переводы описаний для обоих языков
   ['ru', 'en'].forEach(lang => {
-    delete task.value.translations[lang].testDescriptions[testId];
+    if (task.value.translations[lang].testDescriptions[testId]) {
+      console.log(`Удаление описания теста для языка ${lang}, ID: ${testId}`);
+      delete task.value.translations[lang].testDescriptions[testId];
+    }
   });
+  
+  // Логируем оставшиеся описания для отладки
+  console.log('Оставшиеся описания тестов RU:', task.value.translations.ru.testDescriptions);
+  console.log('Оставшиеся описания тестов EN:', task.value.translations.en.testDescriptions);
 };
 
 const addHint = () => {
@@ -481,6 +548,17 @@ const validateForm = () => {
     return false;
   }
 
+  // Проверяем, что у всех тестов есть описания на русском языке
+  const missingDescriptions = task.value.tests.some(test => {
+    const testId = test._id;
+    return !task.value.translations.ru.testDescriptions[testId] && !test.description;
+  });
+  
+  if (missingDescriptions) {
+    toast.error('Необходимо заполнить описания всех тестов на русском языке');
+    return false;
+  }
+
   if (!task.value.solution) {
     toast.error(t('tasks.solutionRequired'));
     return false;
@@ -509,6 +587,28 @@ const submitForm = async () => {
 
   isSubmitting.value = true;
   
+  // Обновляем описания тестов перед отправкой
+  task.value.tests.forEach((test, index) => {
+    // Если тест имеет временный ID, обновляем его в описаниях
+    if (test._id.startsWith('temp-')) {
+      // Сохраняем описания из временного ID
+      const ruDesc = task.value.translations.ru.testDescriptions[test._id] || '';
+      const enDesc = task.value.translations.en.testDescriptions[test._id] || '';
+      
+      // Удаляем временные ключи
+      delete task.value.translations.ru.testDescriptions[test._id];
+      delete task.value.translations.en.testDescriptions[test._id];
+      
+      // Создаем новый ключ для описания
+      const newKey = `temp-${index}`;
+      task.value.translations.ru.testDescriptions[newKey] = ruDesc;
+      task.value.translations.en.testDescriptions[newKey] = enDesc;
+    }
+  });
+  
+  console.log('Отправляемые описания тестов RU:', task.value.translations.ru.testDescriptions);
+  console.log('Отправляемые описания тестов EN:', task.value.translations.en.testDescriptions);
+  
   // Подготовка данных для отправки
   const preparedTaskData = {
     _id: task.value._id,
@@ -516,21 +616,36 @@ const submitForm = async () => {
     description: task.value.translations.ru.description,
     difficulty: task.value.difficulty,
     requirements: task.value.translations.ru.requirements,
-    tests: task.value.tests.map(test => ({
-      _id: test._id.startsWith('temp-') ? undefined : test._id,
-      description: test.description,
-      input: test.input,
-      expectedOutput: test.expectedOutput,
-      testCode: test.testCode
-    })),
+    tests: task.value.tests.map(test => {
+      // Если у теста нет описания, но есть в переводах, используем его
+      if (!test.description && task.value.translations.ru.testDescriptions[test._id]) {
+        test.description = task.value.translations.ru.testDescriptions[test._id];
+      }
+      
+      return {
+        _id: test._id.startsWith('temp-') ? undefined : test._id,
+        description: test.description,
+        input: test.input,
+        expectedOutput: test.expectedOutput,
+        testCode: test.testCode
+      };
+    }),
     hints: task.value.translations.ru.hints,
     template: task.value.translations.ru.template,
     solution: task.value.solution,
     isPublished: task.value.isPublished,
     translations: {
-      ru: task.value.translations.ru,
-      en: task.value.translations.en.title || task.value.translations.en.description || task.value.translations.en.requirements.length || task.value.translations.en.template || task.value.translations.en.hints.length || Object.keys(task.value.translations.en.testDescriptions).length
-        ? task.value.translations.en
+      ru: {
+        ...task.value.translations.ru,
+        testDescriptions: { ...task.value.translations.ru.testDescriptions }
+      },
+      en: task.value.translations.en.title || task.value.translations.en.description || 
+          task.value.translations.en.requirements.length || task.value.translations.en.template || 
+          task.value.translations.en.hints.length || Object.keys(task.value.translations.en.testDescriptions).length
+        ? {
+            ...task.value.translations.en,
+            testDescriptions: { ...task.value.translations.en.testDescriptions }
+          }
         : null
     }
   };
@@ -541,6 +656,8 @@ const submitForm = async () => {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     };
+
+    console.log('Отправляемые данные задачи:', preparedTaskData);
 
     let response;
     if (isEditMode.value) {
@@ -590,6 +707,15 @@ watch(currentLang, () => {
     updateCodeEditors();
   });
 });
+
+const updateTestDescription = (index, testId) => {
+  if (testId && task.value.tests[index]) {
+    // Если описание на русском языке пустое, копируем из основного описания
+    if (!task.value.translations.ru.testDescriptions[testId] && task.value.tests[index].description) {
+      task.value.translations.ru.testDescriptions[testId] = task.value.tests[index].description;
+    }
+  }
+};
 
 onMounted(async () => {
   if (!checkAuth()) return;

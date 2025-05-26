@@ -164,16 +164,13 @@ const moderateComment = (status) => {
 
 const submitReport = async () => {
   try {
-    // Получаем идентификатор статьи или задачи из URL
+    // Получаем идентификатор статьи из URL
     const path = window.location.pathname;
     let url;
     
     if (path.includes('/articles/')) {
       const articleId = path.split('/articles/')[1];
       url = `/api/articles/${articleId}/comments/${props.comment._id}/report`;
-    } else if (path.includes('/tasks/')) {
-      const taskId = path.split('/tasks/')[1];
-      url = `/api/tasks/${taskId}/comments/${props.comment._id}/report`;
     } else {
       // Если не можем определить контекст, используем старый формат
       url = `/api/comments/${props.comment._id}/report`;

@@ -32,7 +32,6 @@ const createIndexes = async () => {
     // Индексы для Comment
     const Comment = mongoose.model('Comment');
     await Comment.collection.createIndex({ article: 1, status: 1 }); // Для отображения комментариев к статье
-    await Comment.collection.createIndex({ task: 1, status: 1 }); // Для отображения комментариев к задаче
     await Comment.collection.createIndex({ author: 1 }); // Для фильтрации по автору
     
     console.log('Database indexes created successfully');

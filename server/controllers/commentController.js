@@ -84,10 +84,6 @@ exports.getComments = async (req, res) => {
     const articleId = req.params.id || req.query.articleId;
     if (articleId) query.article = articleId;
     
-    // Получение ID задачи из query
-    const taskId = req.query.taskId;
-    if (taskId) query.task = taskId;
-    
     // Фильтр по статусу (только для админов)
     if (req.user && req.user.role === 'admin' && status) {
       query.status = status;
@@ -151,7 +147,7 @@ exports.getComments = async (req, res) => {
  */
 exports.createComment = async (req, res) => {
   try {
-    const { content, task, parentComment } = req.body;
+    const { content, parentComment } = req.body;
     
     // Получение ID статьи из параметров URL или из тела запроса
     const article = req.params.id || req.body.article;
@@ -161,9 +157,9 @@ exports.createComment = async (req, res) => {
       return res.status(400).json({ message: 'Текст комментария не может быть пустым' });
     }
 
-    // Проверка наличия статьи или задачи
-    if (!article && !task) {
-      return res.status(400).json({ message: 'Необходимо указать статью или задачу' });
+    // Проверка наличия статьи
+    if (!article) {
+      return res.status(400).json({ message: 'Необходимо указать статью' });
     }
 
     // Проверка уровня вложенности
@@ -213,7 +209,6 @@ exports.createComment = async (req, res) => {
     const comment = await Comment.create({
       content: moderationResult.sanitizedText,
       article,
-      task,
       parentComment,
       author: req.user.id,
       status,
@@ -330,8 +325,7 @@ exports.getPendingComments = async (req, res) => {
 
     const comments = await Comment.find(query)
       .populate('author', 'name email avatar')
-      .populate('article', 'translations') // Изменено: запрашиваем translations
-      .populate('task', 'title')
+      .populate('article', 'translations')
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(parseInt(limit));
@@ -339,9 +333,7 @@ exports.getPendingComments = async (req, res) => {
     const processedComments = comments.map(comment => {
       const result = comment.toObject();
       if (comment.article && comment.article.translations?.ru?.title) {
-        result.contentTitle = `Статья: ${comment.article.translations.ru.title}`; // Используем translations.ru.title
-      } else if (comment.task && comment.task.title) {
-        result.contentTitle = `Задача: ${comment.task.title}`;
+        result.contentTitle = `Статья: ${comment.article.translations.ru.title}`;
       } else {
         result.contentTitle = 'Контент удален';
       }

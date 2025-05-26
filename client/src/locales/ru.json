@@ -148,6 +148,7 @@
     "clearFilters": "Сбросить фильтры"
   },
   "tasks": {
+    "someTestsFailed": "Некоторые тесты не пройдены",
     "successModalTitle": "Успех",
     "successModalClose": "Закрыть",
     "error": "Ошибка",
